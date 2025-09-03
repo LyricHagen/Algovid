@@ -227,11 +227,21 @@ class EnhancedGroupCLI:
                         try:
                             import sys
                             import os
-                            # Add the math directory to the path
-                            math_path = os.path.join(os.path.dirname(__file__), '..', 'math')
+                            # Add math directory to Python path
+                            math_path = '/Users/lyrichagen/Algovid/math'
                             sys.path.insert(0, math_path)
                             
-                            from group_utils import is_valid_group, find_identity, find_inverse, get_group_elements
+                            # Import with explicit path
+                            import importlib.util
+                            spec = importlib.util.spec_from_file_location("group_utils", os.path.join(math_path, "group_utils.py"))
+                            group_utils = importlib.util.module_from_spec(spec)
+                            spec.loader.exec_module(group_utils)
+                            
+                            # Extract functions
+                            is_valid_group = group_utils.is_valid_group
+                            find_identity = group_utils.find_identity
+                            find_inverse = group_utils.find_inverse
+                            get_group_elements = group_utils.get_group_elements
                             
                             table = group['structure']['table']
                             elements = get_group_elements(table)
