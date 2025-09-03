@@ -191,6 +191,100 @@ class EnhancedGroupCLI:
             
         except Exception as e:
             print(f"❌ Error getting stats: {e}")
+
+    def validate_group(self):
+            """Validate a group's structure using group theory axioms"""
+            print("\n🔍 VALIDATE GROUP")
+            print("=" * 50)
+            
+            # First list all groups
+            try:
+                response_data = self.make_request(f"{self.base_url}/groups")
+                groups = json.loads(response_data)
+                
+                if not groups:
+                    print("📭 No groups to validate.")
+                    return
+                
+                print("Available groups:")
+                for i, group in enumerate(groups, 1):
+                    print(f"{i}. {group['name']} (ID: {group.get('_id', 'N/A')})")
+                
+                try:
+                    choice = int(input("\nEnter the number of the group to validate: ")) - 1
+                    if 0 <= choice < len(groups):
+                        group = groups[choice]
+                        print(f"\n🔍 Validating group: {group['name']}")
+                        print("=" * 50)
+                        
+                        # Check if group has a structure to validate
+                        if not group.get('structure') or not group['structure'].get('table'):
+                            print("⚠️  This group has no multiplication table to validate.")
+                            print("   Only groups with 'table' structures can be validated.")
+                            return
+                        
+                        # Import and use the validation function
+                        try:
+                            import sys
+                            import os
+                            # Add the math directory to the path
+                            math_path = os.path.join(os.path.dirname(__file__), '..', 'math')
+                            sys.path.insert(0, math_path)
+                            
+                            from group_utils import is_valid_group, find_identity, find_inverse, get_group_elements
+                            
+                            table = group['structure']['table']
+                            elements = get_group_elements(table)
+                            
+                            print(f"🏷️  Group: {group['name']}")
+                            print(f"📝 Description: {group['description'] or 'No description'}")
+                            print(f"🔢 Elements: {', '.join(sorted(elements))}")
+                            print(f"📊 Order: {len(elements)}")
+                            print("-" * 30)
+                            
+                            # Validate the group
+                            print("🔍 Checking group theory axioms...")
+                            is_valid = is_valid_group(table)
+                            
+                            if is_valid:
+                                print("✅ VALID GROUP! All axioms satisfied.")
+                                print("\n📋 Axiom Check Results:")
+                                print("   ✅ Closure: Every product is in the group")
+                                print("   ✅ Associativity: (a * b) * c = a * (b * c)")
+                                print("   ✅ Identity: Identity element exists")
+                                print("   ✅ Inverses: Every element has an inverse")
+                                
+                                # Show additional properties
+                                identity = find_identity(table)
+                                if identity:
+                                    print(f"\n🆔 Identity element: {identity}")
+                                    
+                                    # Show inverses
+                                    print("\n🔄 Element inverses:")
+                                    for element in sorted(elements):
+                                        if element != identity:
+                                            inverse = find_inverse(table, element)
+                                            if inverse:
+                                                print(f"   {element}⁻¹ = {inverse}")
+                            else:
+                                print("❌ NOT A VALID GROUP! Some axioms failed.")
+                                print("\n📋 Axiom Check Results:")
+                                print("   ❌ One or more group axioms are not satisfied")
+                                print("   💡 Check your multiplication table structure")
+                            
+                        except ImportError as e:
+                            print(f"❌ Error importing validation functions: {e}")
+                            print("   Make sure the math/group_utils.py file is available")
+                        except Exception as e:
+                            print(f"❌ Error during validation: {e}")
+                            
+                    else:
+                        print("❌ Invalid choice.")
+                except ValueError:
+                    print("❌ Please enter a valid number.")
+                    
+            except Exception as e:
+                print(f"❌ Error: {e}")
     
     def run(self):
         """Main CLI loop with enhanced menu"""
@@ -214,13 +308,14 @@ class EnhancedGroupCLI:
             print("1. 📋 List all groups")
             print("2. ➕ Add new group")
             print("3. 🗑️  Delete group")
-            print("4. 📊 Show statistics")
-            print("5. 🔄 Test connection")
-            print("6. 🚪 Exit")
+            print("4. 🔍 Validate group")
+            print("5. 📊 Show statistics")
+            print("6. 🔄 Test connection")
+            print("7. 🚪 Exit")
             print("=" * 50)
             
             try:
-                choice = input("Enter your choice (1-6): ").strip()
+                choice = input("Enter your choice (1-7): ").strip()
                 
                 if choice == "1":
                     self.list_groups()
@@ -229,17 +324,19 @@ class EnhancedGroupCLI:
                 elif choice == "3":
                     self.delete_group()
                 elif choice == "4":
-                    self.show_stats()
+                    self.validate_group()
                 elif choice == "5":
+                    self.show_stats()
+                elif choice == "6":
                     if self.test_connection():
                         print("✅ Backend connection is working!")
                     else:
                         print("❌ Backend connection failed!")
-                elif choice == "6":
+                elif choice == "7":
                     print("\n👋 Goodbye! Thanks for using Algovid!")
                     break
                 else:
-                    print("❌ Invalid choice. Please enter 1-6.")
+                    print("❌ Invalid choice. Please enter 1-7.")
                     
             except KeyboardInterrupt:
                 print("\n👋 Goodbye!")
