@@ -1,9 +1,4 @@
 #!/usr/bin/env python3
-"""
-Enhanced Python CLI for Algovid group management.
-This provides the same functionality as the Swift CLI but with additional features.
-"""
-
 import urllib.request
 import urllib.parse
 import json
