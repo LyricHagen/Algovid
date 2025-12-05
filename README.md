@@ -44,4 +44,9 @@ The `math/group_utils.py` file has functions to check if a multiplication table 
 - `is_valid_group(table)` - checks closure, associativity, identity, inverses
 - `find_identity(table)` - finds the identity element
 - `find_inverse(table, element)` - finds an element's inverse
-- `get_group_elements(table)` - gets all elements from the table 
+- `get_group_elements(table)` - gets all elements from the table
+
+
+
+© 2025 Lyric Hagen. All rights reserved. 
+This project was created by Lyric Hagen. Do not present or distribute as your own work.
