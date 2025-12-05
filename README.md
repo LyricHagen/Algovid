@@ -46,7 +46,7 @@ The `math/group_utils.py` file has functions to check if a multiplication table 
 - `find_inverse(table, element)` - finds an element's inverse
 - `get_group_elements(table)` - gets all elements from the table
 
-
+<br>
 
 © 2025 Lyric Hagen. All rights reserved. 
 This project was created by Lyric Hagen. Do not present or distribute as your own work.
